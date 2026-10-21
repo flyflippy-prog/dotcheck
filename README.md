@@ -1,7 +1,10 @@
 # dotcheck
 
-A .NET 10 command-line tool for Windows x64 that runs builds and tests, validates
-TRX reports, and presents bounded diagnostics for developers, CI, and coding agents.
+A .NET 10 CLI for Windows x64 that helps developers and coding agents work more
+efficiently with compact build/test diagnostics and TRX report inspection.
+Its bounded output can reduce input token usage and context clutter in AI-assisted
+development. Saved reports let agents retrieve details without rerunning tests.
+
 The self-contained executable includes the .NET runtime. Building or testing a
 project requires the SDK selected by that project.
 
