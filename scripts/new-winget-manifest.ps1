@@ -50,15 +50,15 @@ $licenseUrl = Quote-Yaml "$repository/blob/$tag/LICENSE"
 $releaseUrl = Quote-Yaml "$repository/releases/tag/$tag"
 $files = @{}
 $files["$PackageIdentifier.yaml"] = @"
-# yaml-language-server: `$schema=https://aka.ms/winget-manifest.version.1.9.0.schema.json
+# yaml-language-server: `$schema=https://aka.ms/winget-manifest.version.1.12.0.schema.json
 PackageIdentifier: $id
 PackageVersion: $v
 DefaultLocale: en-US
 ManifestType: version
-ManifestVersion: 1.9.0
+ManifestVersion: 1.12.0
 "@
 $files["$PackageIdentifier.installer.yaml"] = @"
-# yaml-language-server: `$schema=https://aka.ms/winget-manifest.installer.1.9.0.schema.json
+# yaml-language-server: `$schema=https://aka.ms/winget-manifest.installer.1.12.0.schema.json
 PackageIdentifier: $id
 PackageVersion: $v
 InstallerType: zip
@@ -74,10 +74,10 @@ Installers:
       - RelativeFilePath: $path
         PortableCommandAlias: dotcheck
 ManifestType: installer
-ManifestVersion: 1.9.0
+ManifestVersion: 1.12.0
 "@
 $files["$PackageIdentifier.locale.en-US.yaml"] = @"
-# yaml-language-server: `$schema=https://aka.ms/winget-manifest.defaultLocale.1.9.0.schema.json
+# yaml-language-server: `$schema=https://aka.ms/winget-manifest.defaultLocale.1.12.0.schema.json
 PackageIdentifier: $id
 PackageVersion: $v
 PackageLocale: en-US
@@ -97,7 +97,7 @@ Tags:
   - testing
 ReleaseNotesUrl: $releaseUrl
 ManifestType: defaultLocale
-ManifestVersion: 1.9.0
+ManifestVersion: 1.12.0
 "@
 New-Item -ItemType Directory -Path $output | Out-Null
 foreach ($item in $files.GetEnumerator()) { [IO.File]::WriteAllText((Join-Path $output $item.Key), $item.Value.TrimEnd() + "`n", [Text.UTF8Encoding]::new($false)) }

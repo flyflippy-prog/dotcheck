@@ -36,6 +36,8 @@ a release archive. Preserve third-party notices; do not replace them with Apache
 Create and push a `vMAJOR.MINOR.PATCH` tag matching the project version.
 `.github/workflows/release.yml` checks the tag, builds the managed package, runs
 acceptance checks, uploads the ZIP/checksum, and creates a draft GitHub Release.
+It also tests the portable ZIP with WinGet on the disposable build runner before
+uploading release assets.
 An existing empty draft can be populated. Published releases and existing assets
 are preserved. Only the draft job has `contents: write`.
 

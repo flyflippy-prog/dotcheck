@@ -6,7 +6,7 @@ LICENSE, NOTICE, and the Microsoft .NET license/third-party notices. It is self-
 manifest does not require an installed runtime. An SDK is needed only for Build/Run.
 
 WinGet supports ZIP archives with `NestedInstallerType: portable` and an explicit
-executable path/command alias. See the [Microsoft manifest specification](https://github.com/microsoft/winget-pkgs/blob/master/doc/manifest/schema/1.9.0/installer.md).
+executable path/command alias. See the [Microsoft manifest specification](https://github.com/microsoft/winget-pkgs/blob/master/doc/manifest/schema/1.12.0/installer.md).
 WinGet's [portable installation implementation](https://github.com/microsoft/winget-cli/blob/master/src/AppInstallerCLICore/Workflows/PortableFlow.cpp)
 retains archive contents; installation tests must confirm that all four
 license/notice files remain present on the target machine.
@@ -39,7 +39,7 @@ The script reads the version, architecture, and executable path from the actual
 ZIP and computes its SHA-256. It requires project/runtime license materials and
 rejects evidence-bearing packages and unversioned download URLs. It generates
 version, installer, and en-US locale manifests under `artifacts/winget`, using
-schema 1.9.0. Existing output is never overwritten.
+schema 1.12.0. Existing output is never overwritten.
 
 The installer declares a portable ZIP, the `dotcheck` alias, and
 uninstall-before-upgrade behavior. Portable manifests omit `Scope`; choose

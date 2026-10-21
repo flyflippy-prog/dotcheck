@@ -21,7 +21,9 @@ function Invoke-WinGet([string[]]$Arguments) {
     if ($LASTEXITCODE -ne 0) { throw "WinGet failed ($LASTEXITCODE): $($Arguments -join ' ')" }
 }
 try {
-    if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
+    $existingWinGet = Get-Command winget -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1
+    $existingVersion = if ($existingWinGet) { [version]((& $existingWinGet.Source --version).Trim().TrimStart('v')) } else { [version]'0.0' }
+    if ($existingVersion -lt [version]'1.12') {
         Install-Module Microsoft.WinGet.Client -Scope CurrentUser -Repository PSGallery -Force -AllowClobber
         Import-Module Microsoft.WinGet.Client
         Repair-WinGetPackageManager -AllUsers -Force -Latest
@@ -31,10 +33,11 @@ try {
     Invoke-WinGet @('--version')
     Invoke-WinGet @('settings', '--enable', 'LocalManifestFiles')
     $manifest = Join-Path $root 'manifest'
+    $version = ([xml](Get-Content (Join-Path $repo 'src/dotcheck/dotcheck.csproj') -Raw)).Project.PropertyGroup.Version
     $generated = Join-Path $repo ('artifacts/winget-test-' + [guid]::NewGuid().ToString('N'))
     & (Join-Path $repo 'scripts/new-winget-manifest.ps1') -Archive $archivePath -PackageIdentifier $id `
         -RepositoryUrl 'https://github.com/flyflippy-prog/dotcheck' `
-        -InstallerUrl 'https://github.com/flyflippy-prog/dotcheck/releases/download/v1.0.0/dotcheck-1.0.0-win-x64.zip' `
+        -InstallerUrl "https://github.com/flyflippy-prog/dotcheck/releases/download/v$version/dotcheck-$version-win-x64.zip" `
         -OutputDirectory ([IO.Path]::GetRelativePath($repo, $generated))
     Copy-Item -LiteralPath $generated -Destination $manifest -Recurse
     Invoke-WinGet @('validate', '--manifest', $manifest)
@@ -61,11 +64,14 @@ try {
     $previous = Join-Path $root 'previous'
     Copy-Item -LiteralPath $manifest -Destination $previous -Recurse
     Get-ChildItem $previous -File | ForEach-Object {
-        [IO.File]::WriteAllText($_.FullName, ((Get-Content $_.FullName -Raw) -replace "PackageVersion: '1.0.0'", "PackageVersion: '0.9.0'"))
+        [IO.File]::WriteAllText($_.FullName, ((Get-Content $_.FullName -Raw).Replace("PackageVersion: '$version'", "PackageVersion: '0.0.0'")))
     }
     $location = Join-Path $root 'installed tool Ω'
     Invoke-WinGet @('install', '--manifest', $previous, '--scope', 'user', '--location', $location, '--accept-package-agreements', '--accept-source-agreements')
-    Invoke-WinGet @('upgrade', '--manifest', $manifest, '--scope', 'user', '--location', $location, '--accept-package-agreements', '--accept-source-agreements')
+    # Install detects the existing older portable registration and performs an upgrade.
+    Invoke-WinGet @('install', '--manifest', $manifest, '--scope', 'user', '--location', $location, '--accept-package-agreements', '--accept-source-agreements')
+    $inventory = & $script:winget list --id $id --exact --disable-interactivity --accept-source-agreements
+    if ($LASTEXITCODE -ne 0 -or ($inventory -join "`n") -notmatch [regex]::Escape($version)) { throw 'Upgraded registration missing' }
     $executables = @(Get-ChildItem $location -Filter dotcheck.exe -File -Recurse)
     if ($executables.Count -ne 1 -or -not (Test-Path -LiteralPath $aliasPath)) { throw 'Installed executable or alias missing' }
     $installed = $executables[0].FullName
