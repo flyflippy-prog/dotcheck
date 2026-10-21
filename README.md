@@ -5,7 +5,7 @@ TRX reports, and presents bounded diagnostics for developers, CI, and coding age
 The self-contained executable includes the .NET runtime. Building or testing a
 project requires the SDK selected by that project.
 
-[Usage contract](docs/compatibility.md) · [Installation](docs/installation.md) ·
+[Usage guide](docs/usage.md) · [CLI contract](docs/compatibility.md) · [Installation](docs/installation.md) ·
 [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) · [Changelog](CHANGELOG.md)
 
 [GitHub](https://github.com/flyflippy-prog/dotcheck) ·
@@ -23,6 +23,8 @@ what failed and what to investigate next.
 | Investigating a failed run | Read the existing TRX, list failures, then inspect one test without repeating the run |
 | CI and scripts | JSON and exit codes for automation, with missing or inconsistent reports treated as invalid results |
 | Coding agents | Bounded diagnostics and saved-run inspection, so an agent can request relevant details and reuse available results |
+| Long or interrupted runs | Timeouts, bounded capture, and owned-process cleanup help automation finish predictably |
+| Projects sharing build outputs | A worktree lock rejects overlapping dotcheck runs before they compete for the same outputs |
 
 Build/Run uses the project's .NET SDK and existing test tooling. Report inspection
 can also be used independently with TRX produced by another build or CI job.
@@ -40,6 +42,10 @@ dotcheck -Path .\TestResults\current.trx -Mode Detail -Test Namespace.FailingTes
 Both commands inspect the saved report. They do not rebuild the project or execute
 tests. dotcheck's benefit is a shorter path from a completed run to useful
 diagnostics; build and test execution time still depends on the project and SDK.
+
+The [usage guide](docs/usage.md) covers everyday development, failure investigation,
+CI integration, saved runs, and practical limits. Use it to choose a workflow;
+the [CLI contract](docs/compatibility.md) lists every option and default.
 
 ## Smaller context for coding agents
 
