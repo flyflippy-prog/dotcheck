@@ -1,0 +1,28 @@
+name: WinGet installation
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  install:
+    runs-on: windows-2025
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Install the pinned SDK
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
+        with:
+          global-json-file: global.json
+      - name: Package
+        run: ./scripts/package.ps1 -OutputDirectory artifacts/winget-install-test
+      - name: Test portable package lifecycle
+        run: ./tests/winget-install.ps1 -Archive artifacts/winget-install-test.zip

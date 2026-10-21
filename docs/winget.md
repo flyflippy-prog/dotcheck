@@ -16,12 +16,12 @@ license/notice files remain present on the target machine.
 Before generating the final manifest, confirm:
 
 - The repository is `https://github.com/flyflippy-prog/dotcheck`.
-- The permanent package identifier, in `Publisher.Package` form. The publisher
-  display name is flyflippy; the identifier must be chosen and checked for conflicts.
+- The package identifier is `flyflippy.dotcheck`; the publisher display name is
+  flyflippy. Check for an existing package or submission before opening a PR.
 - A published, version-specific GitHub ZIP URL and the matching local archive.
 - Successful clean-machine installation, command resolution, upgrade, and removal.
 
-Use the assigned package identifier in install and uninstall commands.
+Use `flyflippy.dotcheck` in install and uninstall commands.
 
 ## Generate manifests
 
@@ -30,7 +30,7 @@ Publish the verified ZIP from the draft GitHub Release, then run:
 ```powershell
 pwsh -NoProfile -File .\scripts\new-winget-manifest.ps1 `
   -Archive .\artifacts\dotcheck-1.0.0-win-x64.zip `
-  -PackageIdentifier <confirmed-package-id> `
+  -PackageIdentifier flyflippy.dotcheck `
   -RepositoryUrl https://github.com/flyflippy-prog/dotcheck `
   -InstallerUrl https://github.com/flyflippy-prog/dotcheck/releases/download/v1.0.0/dotcheck-1.0.0-win-x64.zip
 ```
@@ -72,11 +72,19 @@ a fresh shell resolves the intended copy. Test upgrade from a prior disposable
 test version, then removal:
 
 ```powershell
-winget uninstall --id <confirmed-package-id> --exact
+winget uninstall --id flyflippy.dotcheck --exact
 ```
 
 Verify owned files/aliases are removed while unrelated PATH entries, commands,
 and reports remain intact. Do not run installation tests against a working copy.
+
+The manually dispatched `WinGet installation` workflow runs portable package
+installation tests on a disposable GitHub-hosted Windows runner. It validates
+the generated manifests, serves the candidate archive over loopback, and checks
+installation, a synthetic-version upgrade, installed application behavior,
+license retention, command resolution, removal, and reinstallation. Its temporary
+localhost manifests and synthetic prior version are never submitted. The runner
+includes an SDK; this does not replace a separate check on a machine without .NET.
 
 ## Submit
 
