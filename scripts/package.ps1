@@ -33,7 +33,7 @@ foreach ($name in @('LICENSE', 'NOTICE', 'README.md', 'AGENTS.md', 'CONTRIBUTING
     Copy-Item -LiteralPath (Join-Path $repo $name) -Destination $output
 }
 New-Item -ItemType Directory -Force (Join-Path $output 'docs') | Out-Null
-foreach ($name in @('architecture.md', 'compatibility.md', 'development.md', 'installation.md', 'licensing.md', 'releasing.md', 'winget.md')) {
+foreach ($name in @('architecture.md', 'compatibility.md', 'development.md', 'installation.md', 'licensing.md', 'releasing.md', 'usage.md', 'winget.md')) {
     Copy-Item -LiteralPath (Join-Path $repo "docs/$name") -Destination (Join-Path $output 'docs')
 }
 $sources = Get-ChildItem (Join-Path $repo 'src/dotcheck') -File | Sort-Object Name | ForEach-Object {
