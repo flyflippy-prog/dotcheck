@@ -72,11 +72,14 @@ a fresh shell resolves the intended copy. Test upgrade from a prior disposable
 test version, then removal:
 
 ```powershell
-winget uninstall --id flyflippy.dotcheck --exact
+winget uninstall --name dotcheck --exact --scope user
 ```
 
 Verify owned files/aliases are removed while unrelated PATH entries, commands,
 and reports remain intact. Do not run installation tests against a working copy.
+Before community-source indexing, local manifests may appear under an ARP ID;
+the command above selects the test installation by its exact name. Once indexed,
+use `--id flyflippy.dotcheck --exact` for normal package operations.
 
 The manually dispatched `WinGet installation` workflow runs portable package
 installation tests on a disposable GitHub-hosted Windows runner. It validates
@@ -85,6 +88,9 @@ installation, a synthetic-version upgrade, installed application behavior,
 license retention, command resolution, removal, and reinstallation. Its temporary
 localhost manifests and synthetic prior version are never submitted. The runner
 includes an SDK; this does not replace a separate check on a machine without .NET.
+The test script refuses existing dotcheck installations. Local execution requires
+the explicit `-AllowLocalInstallation` switch, WinGet 1.12 or later, and locally
+enabled manifests; it installs and removes a user-scoped test copy.
 
 ## Submit
 

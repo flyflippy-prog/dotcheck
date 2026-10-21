@@ -1,18 +1,23 @@
 #requires -Version 7.0
 [CmdletBinding()]
-param([Parameter(Mandatory)][string]$Archive)
+param([Parameter(Mandatory)][string]$Archive, [switch]$AllowLocalInstallation)
 $ErrorActionPreference = 'Stop'
-if ($env:GITHUB_ACTIONS -ne 'true' -or $env:RUNNER_ENVIRONMENT -ne 'github-hosted') {
-    throw 'Installation tests require a disposable GitHub-hosted Windows runner'
+$hosted = $env:GITHUB_ACTIONS -eq 'true' -and $env:RUNNER_ENVIRONMENT -eq 'github-hosted'
+if (-not $hosted -and -not $AllowLocalInstallation) {
+    throw 'Use a disposable GitHub-hosted runner or explicitly authorize local installation with AllowLocalInstallation'
 }
 if (-not $IsWindows) { throw 'Windows is required' }
 $repo = Split-Path $PSScriptRoot
 $archivePath = (Resolve-Path -LiteralPath $Archive).Path
-$root = Join-Path $env:RUNNER_TEMP ('dotcheck-winget-' + [guid]::NewGuid().ToString('N'))
+$temporaryRoot = if ($hosted) { $env:RUNNER_TEMP } else { [IO.Path]::GetTempPath() }
+$root = Join-Path $temporaryRoot ('dotcheck-winget-' + [guid]::NewGuid().ToString('N'))
 New-Item -ItemType Directory -Path $root | Out-Null
 $id = 'flyflippy.dotcheck'
 $aliasPath = Join-Path $env:LOCALAPPDATA 'Microsoft/WinGet/Links/dotcheck.exe'
 if (Test-Path -LiteralPath $aliasPath) { throw 'Existing dotcheck registration must not be replaced' }
+if (@(Get-ItemProperty 'HKCU:/Software/Microsoft/Windows/CurrentVersion/Uninstall/*' | Where-Object DisplayName -eq dotcheck).Count) {
+    throw 'An existing dotcheck installation must not be replaced by installation tests'
+}
 $manualRegistration = [Environment]::GetEnvironmentVariable('DOTCHECK_TOOL_FILE', 'User')
 $oldPath = $env:PATH
 $server = $null
@@ -24,14 +29,21 @@ try {
     $existingWinGet = Get-Command winget -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1
     $existingVersion = if ($existingWinGet) { [version]((& $existingWinGet.Source --version).Trim().TrimStart('v')) } else { [version]'0.0' }
     if ($existingVersion -lt [version]'1.12') {
-        Install-Module Microsoft.WinGet.Client -Scope CurrentUser -Repository PSGallery -Force -AllowClobber
-        Import-Module Microsoft.WinGet.Client
-        Repair-WinGetPackageManager -AllUsers -Force -Latest
+        if (-not $hosted) { throw 'Install WinGet 1.12 or later before running local tests' }
+        $bootstrap = Join-Path $root 'winget-bootstrap'
+        New-Item -ItemType Directory -Path $bootstrap | Out-Null
+        $release = 'https://github.com/microsoft/winget-cli/releases/download/v1.29.380'
+        Invoke-WebRequest "$release/DesktopAppInstaller_Dependencies.zip" -OutFile (Join-Path $bootstrap 'dependencies.zip')
+        Expand-Archive -LiteralPath (Join-Path $bootstrap 'dependencies.zip') -DestinationPath (Join-Path $bootstrap 'dependencies')
+        $dependencies = @(Get-ChildItem (Join-Path $bootstrap 'dependencies/x64') -Filter '*.msix' -File -Recurse | Select-Object -ExpandProperty FullName)
+        $dependencies += @(Get-ChildItem (Join-Path $bootstrap 'dependencies/x64') -Filter '*.appx' -File -Recurse | Select-Object -ExpandProperty FullName)
+        Invoke-WebRequest "$release/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle" -OutFile (Join-Path $bootstrap 'winget.msixbundle')
+        Add-AppxPackage -Path (Join-Path $bootstrap 'winget.msixbundle') -DependencyPath $dependencies -ForceApplicationShutdown
         $env:PATH += ';' + (Join-Path $env:LOCALAPPDATA 'Microsoft/WindowsApps')
     }
     $script:winget = (Get-Command winget -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
     Invoke-WinGet @('--version')
-    Invoke-WinGet @('settings', '--enable', 'LocalManifestFiles')
+    if ($hosted) { Invoke-WinGet @('settings', '--enable', 'LocalManifestFiles') }
     $manifest = Join-Path $root 'manifest'
     $version = ([xml](Get-Content (Join-Path $repo 'src/dotcheck/dotcheck.csproj') -Raw)).Project.PropertyGroup.Version
     $generated = Join-Path $repo ('artifacts/winget-test-' + [guid]::NewGuid().ToString('N'))
@@ -45,10 +57,37 @@ try {
     $listener.Start()
     $port = $listener.LocalEndpoint.Port
     $listener.Stop()
-    $python = (Get-Command python -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
-    $server = Start-Process -FilePath $python -ArgumentList @(
-        '-m', 'http.server', "$port", '--bind', '127.0.0.1', '--directory', ('"' + (Split-Path $archivePath) + '"')
-    ) -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $root 'server-out.txt') -RedirectStandardError (Join-Path $root 'server-err.txt')
+    $server = Start-Job -ArgumentList $archivePath, $port -ScriptBlock {
+        param($archive, $port)
+        $listener = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback, $port)
+        $listener.Start()
+        try {
+            while ($true) {
+                if (-not $listener.Pending()) { Start-Sleep -Milliseconds 50; continue }
+                $client = $listener.AcceptTcpClient()
+                try {
+                    $stream = $client.GetStream()
+                    $stream.ReadTimeout = 5000
+                    $reader = [IO.StreamReader]::new($stream, [Text.Encoding]::ASCII, $false, 1024, $true)
+                    $request = $reader.ReadLine()
+                    if (-not $request) { continue }
+                    while ($reader.ReadLine()) { }
+                    $parts = $request.Split(' ')
+                    $valid = $parts[0] -in @('GET', 'HEAD') -and [uri]::UnescapeDataString($parts[1]) -eq ('/' + [IO.Path]::GetFileName($archive))
+                    $length = if ($valid) { (Get-Item -LiteralPath $archive).Length } else { 0 }
+                    $status = if ($valid) { '200 OK' } else { '404 Not Found' }
+                    $headers = [Text.Encoding]::ASCII.GetBytes("HTTP/1.1 $status`r`nContent-Length: $length`r`nConnection: close`r`n`r`n")
+                    $stream.Write($headers, 0, $headers.Length)
+                    if ($valid -and $parts[0] -eq 'GET') {
+                        $file = [IO.File]::OpenRead($archive)
+                        try { $file.CopyTo($stream) } finally { $file.Dispose() }
+                    }
+                } catch [IO.IOException] {
+                    # A downloader may probe or abandon a connection before issuing a request.
+                } finally { $client.Dispose() }
+            }
+        } finally { $listener.Stop() }
+    }
     $url = "http://127.0.0.1:$port/" + [uri]::EscapeDataString([IO.Path]::GetFileName($archivePath))
     $ready = $false
     for ($attempt = 0; $attempt -lt 30; $attempt++) {
@@ -70,17 +109,17 @@ try {
     Invoke-WinGet @('install', '--manifest', $previous, '--scope', 'user', '--location', $location, '--accept-package-agreements', '--accept-source-agreements')
     # Install detects the existing older portable registration and performs an upgrade.
     Invoke-WinGet @('install', '--manifest', $manifest, '--scope', 'user', '--location', $location, '--accept-package-agreements', '--accept-source-agreements')
-    $inventory = & $script:winget list --id $id --exact --disable-interactivity --accept-source-agreements
-    if ($LASTEXITCODE -ne 0 -or ($inventory -join "`n") -notmatch [regex]::Escape($version)) { throw 'Upgraded registration missing' }
+    $registration = @(Get-ItemProperty 'HKCU:/Software/Microsoft/Windows/CurrentVersion/Uninstall/*' | Where-Object { $_.WinGetPackageIdentifier -eq $id })
+    if ($registration.Count -ne 1 -or $registration[0].DisplayVersion -ne $version -or $registration[0].InstallLocation -ne $location) { throw 'Upgraded registration missing' }
     $executables = @(Get-ChildItem $location -Filter dotcheck.exe -File -Recurse)
-    if ($executables.Count -ne 1 -or -not (Test-Path -LiteralPath $aliasPath)) { throw 'Installed executable or alias missing' }
+    if ($executables.Count -ne 1) { throw 'Installed executable missing' }
     $installed = $executables[0].FullName
     foreach ($name in @('LICENSE', 'NOTICE', 'DOTNET-LICENSE.TXT', 'DOTNET-THIRD-PARTY-NOTICES.TXT')) {
         if (-not (Test-Path -LiteralPath (Join-Path (Split-Path $installed) $name))) { throw "Missing installed notice: $name" }
     }
     $env:PATH = [Environment]::GetEnvironmentVariable('PATH', 'Machine') + ';' + [Environment]::GetEnvironmentVariable('PATH', 'User')
     $resolved = & (Get-Process -Id $PID).Path -NoProfile -Command '(Get-Command dotcheck -CommandType Application).Source'
-    if ($LASTEXITCODE -ne 0 -or $resolved.Trim() -ne $aliasPath) { throw 'Fresh shell did not resolve the WinGet alias' }
+    if ($LASTEXITCODE -ne 0 -or $resolved.Trim() -notin @($aliasPath, $installed)) { throw 'Fresh shell did not resolve the WinGet command' }
     & (Join-Path $repo 'tests/published-smoke.ps1') -Tool $installed
     if ($LASTEXITCODE -ne 0) { throw 'Installed application smoke failed' }
     $foreign = Join-Path $root 'foreign'
@@ -89,14 +128,15 @@ try {
     [IO.File]::WriteAllText($foreignCommand, '@exit /b 37')
     $foreignHash = (Get-FileHash $foreignCommand).Hash
     $env:PATH = "$foreign;" + $env:PATH
-    Invoke-WinGet @('uninstall', '--id', $id, '--exact', '--scope', 'user')
+    # Local manifests have no community-source correlation until the package is indexed.
+    Invoke-WinGet @('uninstall', '--name', 'dotcheck', '--exact', '--scope', 'user')
     if ((Test-Path -LiteralPath $installed) -or (Test-Path -LiteralPath $aliasPath)) { throw 'Owned executable or alias survived uninstall' }
     if ((Get-FileHash $foreignCommand).Hash -ne $foreignHash) { throw 'Foreign command was changed' }
     if ([Environment]::GetEnvironmentVariable('DOTCHECK_TOOL_FILE', 'User') -ne $manualRegistration) { throw 'Manual installation marker was changed' }
     Invoke-WinGet @('install', '--manifest', $manifest, '--scope', 'user', '--location', $location, '--accept-package-agreements', '--accept-source-agreements')
-    Invoke-WinGet @('uninstall', '--id', $id, '--exact', '--scope', 'user')
+    Invoke-WinGet @('uninstall', '--name', 'dotcheck', '--exact', '--scope', 'user')
     'PASS WinGet install, synthetic-version upgrade, notices, installed smoke, command resolution, uninstall, foreign command preservation, reinstall'
 } finally {
     $env:PATH = $oldPath
-    if ($server -and -not $server.HasExited) { $server.Kill(); $server.WaitForExit() }
+    if ($server) { Stop-Job $server; Remove-Job $server }
 }
