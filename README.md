@@ -33,13 +33,30 @@ For example, after a failed test run, start with a failure list and request deta
 only for the test you are investigating:
 
 ```powershell
-dotcheck -Path .\TestResults\current.trx -Mode Failed
-dotcheck -Path .\TestResults\current.trx -Mode Detail -Test Namespace.FailingTest -StackLines 3
+dotcheck -Path .\TestResults\current.trx -Mode Failed -Top 5 -MaxChars 200
+dotcheck -Path .\TestResults\current.trx -Mode Detail -Test Namespace.FailingTest -Top 1 -MaxChars 800 -StackLines 3
 ```
 
 Both commands inspect the saved report. They do not rebuild the project or execute
 tests. dotcheck's benefit is a shorter path from a completed run to useful
 diagnostics; build and test execution time still depends on the project and SDK.
+
+## Smaller context for coding agents
+
+When an agent includes command output in its model context, long build logs and
+repeated diagnostics consume tokens alongside the code and task instructions.
+dotcheck can reduce that overhead by returning a summary or a bounded selection
+of diagnostics. This leaves more context available for investigating the problem.
+
+Start with Summary or Failed, limit rows and text with `-Top` and `-MaxChars`, then
+request Detail and stack lines for the relevant test. Reuse saved TRX reports or
+journals for follow-up questions instead of repeating a run and its output.
+The underlying reports remain available; selecting fewer details does not change
+the overall result or exit code.
+
+dotcheck does not count tokens or enforce a model's context limit. Token savings
+depend on the original output, selected options, tokenizer, and how the agent
+includes tool results. A fixed token or cost reduction is not guaranteed.
 
 ## Quick start
 
