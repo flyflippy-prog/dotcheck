@@ -27,7 +27,7 @@ try {
         Repair-WinGetPackageManager -AllUsers -Force -Latest
         $env:PATH += ';' + (Join-Path $env:LOCALAPPDATA 'Microsoft/WindowsApps')
     }
-    $script:winget = (Get-Command winget -CommandType Application -ErrorAction Stop).Source
+    $script:winget = (Get-Command winget -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
     Invoke-WinGet @('--version')
     Invoke-WinGet @('settings', '--enable', 'LocalManifestFiles')
     $manifest = Join-Path $root 'manifest'
@@ -42,7 +42,8 @@ try {
     $listener.Start()
     $port = $listener.LocalEndpoint.Port
     $listener.Stop()
-    $server = Start-Process -FilePath (Get-Command python -CommandType Application).Source -ArgumentList @(
+    $python = (Get-Command python -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
+    $server = Start-Process -FilePath $python -ArgumentList @(
         '-m', 'http.server', "$port", '--bind', '127.0.0.1', '--directory', ('"' + (Split-Path $archivePath) + '"')
     ) -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $root 'server-out.txt') -RedirectStandardError (Join-Path $root 'server-err.txt')
     $url = "http://127.0.0.1:$port/" + [uri]::EscapeDataString([IO.Path]::GetFileName($archivePath))
