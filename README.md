@@ -5,6 +5,9 @@ efficiently with compact build/test diagnostics and TRX report inspection.
 Its bounded output can reduce input token usage and context clutter in AI-assisted
 development. Saved reports let agents retrieve details without rerunning tests.
 
+Built for the edit–test–fix loop: get the result, inspect the relevant failure,
+and keep the full report available for follow-up questions.
+
 The self-contained executable includes the .NET runtime. Building or testing a
 project requires the SDK selected by that project.
 
@@ -57,11 +60,27 @@ repeated diagnostics consume tokens alongside the code and task instructions.
 dotcheck can reduce that overhead by returning a summary or a bounded selection
 of diagnostics. This leaves more context available for investigating the problem.
 
+The benefit extends across repeated edit–test–fix cycles. Each check can add a
+small, relevant result to the conversation instead of another full transcript.
+Depending on how the agent retains tool output, this can also reduce the log text
+carried into later model requests and leave more room for code, requirements,
+and earlier decisions.
+
+Saved-report inspection avoids another source of overhead: running tests again
+only to retrieve a failure message or stack trace. A consistent CLI also gives
+agents the same inspection workflow across projects, reducing the need for
+custom log-filtering commands and TRX parsing scripts.
+
 Start with Summary or Failed, limit rows and text with `-Top` and `-MaxChars`, then
 request Detail and stack lines for the relevant test. Reuse saved TRX reports or
 journals for follow-up questions instead of repeating a run and its output.
 The underlying reports remain available; selecting fewer details does not change
 the overall result or exit code.
+
+After changing code, run the appropriate tests again to verify the change.
+Report reuse applies to investigating an existing run; it does not establish
+that a fix works. The efficiency gain comes from less diagnostic handling and
+fewer unnecessary executions; test execution time still depends on the project.
 
 dotcheck does not count tokens or enforce a model's context limit. Token savings
 depend on the original output, selected options, tokenizer, and how the agent

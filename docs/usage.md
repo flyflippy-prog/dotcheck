@@ -107,6 +107,25 @@ decisions. Reusing saved reports also avoids repeating test execution and its
 output solely to answer a follow-up question. Keep full evidence separately so
 the agent can request more detail when needed.
 
+This matters throughout an edit–test–fix loop, rather than just for one large log.
+Repeated checks can otherwise add similar build messages, successful-test output,
+and long stack traces to the conversation. Bounded results reduce that routine
+output at each step. If the integration retains earlier tool results in later
+model requests, the smaller transcript can also reduce subsequent input context.
+Actual token accounting depends on the integration, including caching and pruning.
+
+A practical agent workflow is:
+
+1. Run the relevant tests after a code change and read the overall result.
+2. If they fail, select a failure and request Detail from the saved TRX.
+3. Read additional details from that report as needed, without repeating execution.
+4. After applying a fix, run the appropriate tests again to obtain fresh evidence.
+
+The same CLI and report views work across projects, so an agent can reuse these
+instructions instead of assembling new console filters or XML parsing scripts.
+This can save investigation steps as well as output tokens. It does not remove
+the need to choose adequate test coverage or inspect details omitted by a summary.
+
 The saving depends on the original output, selected options, tokenizer, and tool
 integration. dotcheck does not count tokens, manage context automatically, or
 guarantee a cost reduction. JSON is useful for structured processing; it is not
