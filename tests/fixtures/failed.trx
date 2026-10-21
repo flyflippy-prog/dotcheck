@@ -1,0 +1,2 @@
+<TestRun><Times start="2026-10-20T12:00:00Z" finish="2026-10-20T12:00:01Z"/><Results><UnitTestResult testName="Synthetic.Fail" outcome="Failed" duration="00:00:00.200"><Output><ErrorInfo><Message>password=synthetic-secret Assertion failure</Message><StackTrace>at Synthetic.Fail()
+at Synthetic.Run()</StackTrace></ErrorInfo><StdOut>private-stdout</StdOut><StdErr>private-stderr</StdErr></Output></UnitTestResult></Results><ResultSummary outcome="Failed"><Counters total="1" passed="0" failed="1" notExecuted="0"/></ResultSummary></TestRun>

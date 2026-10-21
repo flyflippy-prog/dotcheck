@@ -1,0 +1,50 @@
+name: Windows verification
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  windows:
+    name: Windows x64 (${{ matrix.publish }})
+    runs-on: windows-2025
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        publish: [managed, aot]
+    defaults:
+      run:
+        shell: pwsh
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+      DOTNET_NOLOGO: '1'
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Install the pinned SDK
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
+        with:
+          global-json-file: global.json
+      - name: Build and verify
+        env:
+          DOTCHECK_PUBLISH_MODE: ${{ matrix.publish }}
+        run: |
+          if ($env:DOTCHECK_PUBLISH_MODE -eq 'aot') {
+            ./scripts/verify.ps1 -NativeAot
+          } else {
+            ./scripts/verify.ps1
+          }
+      # No deployment, release, binary upload, or raw-log upload is configured.

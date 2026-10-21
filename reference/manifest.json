@@ -1,0 +1,26 @@
+{
+  "capturedUtc": "2026-10-20T20:00:26.7626524Z",
+  "reportedVersion": "1.1.2",
+  "baselineExecuted": false,
+  "dotnetImplementationStarted": false,
+  "files": [
+    {
+      "source": "C:\\tools\\dotcheck.ps1",
+      "relativePath": "reference/powershell/dotcheck.ps1",
+      "sha256": "E0795C30A9E5F408911E20ABAEC2A1F9392D04640AD6B66E8C194AD4CD9AB7F1",
+      "bytes": 77459
+    },
+    {
+      "source": "C:\\tools\\dotcheck.README.md",
+      "relativePath": "reference/powershell/dotcheck.README.md",
+      "sha256": "27C66848BEF3A110E93B7A0AAB86C8ECCE8C3682570D6C6963B413447C2BE789",
+      "bytes": 22626
+    },
+    {
+      "source": "C:\\tools\\dotcheck.tests.ps1",
+      "relativePath": "reference/powershell/dotcheck.tests.ps1",
+      "sha256": "7FA77D2ED35E0EF88646AD0646A12349A869A495837BEE6452E9040C3256F602",
+      "bytes": 22973
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+<TestRun><Times start="2026-10-20T12:00:00Z" finish="2026-10-20T12:00:01Z"/><Results><UnitTestResult testName="Synthetic.Pass" outcome="Passed" duration="00:00:00.100"/></Results><ResultSummary outcome="Completed"><Counters total="1" passed="1" failed="0" notExecuted="0"/></ResultSummary></TestRun>

@@ -1,0 +1,856 @@
+[
+  {
+    "payload": {
+      "status": "fail",
+      "reports": 1,
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "other": 0,
+      "runErrors": 1
+    },
+    "fixture": "aborted.trx",
+    "exit": 1,
+    "mode": "Summary"
+  },
+  {
+    "payload": {
+      "status": "fail",
+      "reports": 1,
+      "matched": 0,
+      "omitted": 0,
+      "items": []
+    },
+    "fixture": "aborted.trx",
+    "exit": 1,
+    "mode": "Failed"
+  },
+  {
+    "payload": {
+      "status": "fail",
+      "reports": 1,
+      "matched": 0,
+      "omitted": 0,
+      "items": []
+    },
+    "fixture": "aborted.trx",
+    "exit": 1,
+    "mode": "Skipped"
+  },
+  {
+    "payload": {
+      "status": "fail",
+      "reports": 1,
+      "matched": 0,
+      "omitted": 0,
+      "items": [],
+      "unranked": 1
+    },
+    "fixture": "aborted.trx",
+    "exit": 1,
+    "mode": "Slow"
+  },
+  {
+    "payload": {
+      "status": "fail",
+      "reports": 1,
+      "matched": 1,
+      "omitted": 0,
+      "items": [
+        {
+          "report": "aborted.trx",
+          "test": "Synthetic.Abort",
+          "outcome": "Passed"
+        }
+      ]
+    },
+    "fixture": "aborted.trx",
+    "exit": 1,
+    "mode": "Detail"
+  },
+  {
+    "payload": {
+      "status": "fail",
+      "reports": 1,
+      "matched": 2,
+      "omitted": 0,
+      "items": [
+        {
+          "report": "aborted.trx",
+          "level": "outcome",
+          "message": "Aborted"
+        },
+        {
+          "report": "aborted.trx",
+          "level": "Error",
+          "message": "Bearer [redacted] Host died",
+          "truncated": false
+        }
+      ]
+    },
+    "fixture": "aborted.trx",
+    "exit": 1,
+    "mode": "RunErrors"
+  },
+  {
+    "payload": {
+      "status": "invalid",
+      "reports": 1,
+      "total": 0,
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0,
+      "other": 0,
+      "runErrors": 0,
+      "invalid": 1,
+      "errors": [
+        {
+          "report": "empty.trx",
+          "error": "no_tests"
+        }
+      ]
+    },
+    "fixture": "empty.trx",
+    "exit": 2,
+    "mode": "Summary"
+  },
+  {
+    "payload": {
+      "status": "invalid",
+      "reports": 1,
+      "matched": 0,
+      "omitted": 0,
+      "items": [],
+      "invalid": 1,
+      "errors": [
+        {
+          "report": "empty.trx",
+          "error": "no_tests"
+        }
+      ]
+    },
+    "fixture": "empty.trx",
+    "exit": 2,
+    "mode": "Failed"
+  },
+  {
+    "payload": {
+      "status": "invalid",
+      "reports": 1,
+      "matched": 0,
+      "omitted": 0,
+      "items": [],
+      "invalid": 1,
+      "errors": [
+        {
+          "report": "empty.trx",
+          "error": "no_tests"
+        }
+      ]
+    },
+    "fixture": "empty.trx",
+    "exit": 2,
+    "mode": "Skipped"
+  },
+  {
+    "payload": {
+      "status": "invalid",
+      "reports": 1,
+      "matched": 0,
+      "omitted": 0,
+      "items": [],
+      "invalid": 1,
+      "errors": [
+        {
+          "report": "empty.trx",
+          "error": "no_tests"
+        }
+      ]
+    },
+    "fixture": "empty.trx",
+    "exit": 2,
+    "mode": "Slow"
+  },
+  {
+    "payload": {
+      "status": "invalid",
+      "reports": 1,
+      "matched": 0,
+      "omitted": 0,
+      "items": [],
+      "invalid": 1,
+      "errors": [
+        {
+          "report": "empty.trx",
+          "error": "no_tests"
+        }
+      ]
+    },
+    "fixture": "empty.trx",
+    "exit": 2,
+    "mode": "Detail"
+  },
+  {
+    "payload": {
+      "status": "invalid",
+      "reports": 1,
+      "matched": 0,
+      "omitted": 0,
+      "items": [],
+      "invalid": 1,
+      "errors": [
+        {
+          "report": "empty.trx",
+          "error": "no_tests"
+        }
+      ]
+    },
+    "fixture": "empty.trx",
+    "exit": 2,
+    "mode": "RunErrors"
+  },
+  {
+    "payload": {
+      "status": "fail",
+      "reports": 1,
+      "total": 1,
+      "passed": 0,
+      "failed": 1,
+      "skipped": 0,
+      "other": 0,
+      "runErrors": 0,
+      "sumReportSeconds": 1.0
+    },
+    "fixture": "failed.trx",
+    "exit": 1,
+    "mode": "Summary"
+  },
+  {
+    "payload": {
+      "status": "fail",
+      "reports": 1,
+      "matched": 1,
+      "omitted": 0,
+      "items": [
+        {
+          "report": "failed.trx",
+          "test": "Synthetic.Fail"
+        }
+      ]
+    },
+    "fixture": "failed.trx",
+    "exit": 1,
+    "mode": "Failed"
+  },
+  {
+    "payload": {
+      "status": "fail",
+      "reports": 1,
+      "matched": 0,
+      "omitted": 0,
+      "items": []
+    },
+    "fixture": "failed.trx",
+    "exit": 1,
+    "mode": "Skipped"
+  },
+  {
+    "payload": {
+      "status": "fail",
+      "reports": 1,
+      "matched": 1,
+      "omitted": 0,
+      "items": [
+        {
+          "report": "failed.trx",
+          "test": "Synthetic.Fail",
+          "outcome": "Failed",
+          "seconds": 0.2
+        }
+      ]
+    },
+    "fixture": "failed.trx",
+    "exit": 1,
+    "mode": "Slow"
+  },
+  {
+    "payload": {
+      "status": "fail",
+      "reports": 1,
+      "matched": 1,
+      "omitted": 0,
+      "items": [
+        {
+          "report": "failed.trx",
+          "test": "Synthetic.Fail",
+          "outcome": "Failed",
+          "message": "password=[redacted] Assertion failure",
+          "stack": "at Synthetic.Fail()",
+          "truncated": true
+        }
+      ]
+    },
+    "fixture": "failed.trx",
+    "exit": 1,
+    "mode": "Detail"
+  },
+  {
+    "payload": {
+      "status": "fail",
+      "reports": 1,
+      "matched": 1,
+      "omitted": 0,
+      "items": [
+        {
+          "report": "failed.trx",
+          "level": "outcome",
+          "message": "Failed"
+        }
+      ]
+    },
+    "fixture": "failed.trx",
+    "exit": 1,
+    "mode": "RunErrors"
+  },
+  {
+    "payload": {
+      "status": "invalid",
+      "reports": 1,
+      "total": 0,
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0,
+      "other": 0,
+      "runErrors": 0,
+      "invalid": 1,
+      "errors": [
+        {
+          "report": "hierarchy.trx",
+          "error": "unsupported_hierarchy"
+        }
+      ]
+    },
+    "fixture": "hierarchy.trx",
+    "exit": 2,
+    "mode": "Summary"
+  },
+  {
+    "payload": {
+      "status": "invalid",
+      "reports": 1,
+      "matched": 0,
+      "omitted": 0,
+      "items": [],
+      "invalid": 1,
+      "errors": [
+        {
+          "report": "hierarchy.trx",
+          "error": "unsupported_hierarchy"
+        }
+      ]
+    },
+    "fixture": "hierarchy.trx",
+    "exit": 2,
+    "mode": "Failed"
+  },
+  {
+    "payload": {
+      "status": "invalid",
+      "reports": 1,
+      "matched": 0,
+      "omitted": 0,
+      "items": [],
+      "invalid": 1,
+      "errors": [
+        {
+          "report": "hierarchy.trx",
+          "error": "unsupported_hierarchy"
+        }
+      ]
+    },
+    "fixture": "hierarchy.trx",
+    "exit": 2,
+    "mode": "Skipped"
+  },
+  {
+    "payload": {
+      "status": "invalid",
+      "reports": 1,
+      "matched": 0,
+      "omitted": 0,
+      "items": [],
+      "unranked": 1,
+      "invalid": 1,
+      "errors": [
+        {
+          "report": "hierarchy.trx",
+          "error": "unsupported_hierarchy"
+        }
+      ]
+    },
+    "fixture": "hierarchy.trx",
+    "exit": 2,
+    "mode": "Slow"
+  },
+  {
+    "payload": {
+      "status": "invalid",
+      "reports": 1,
+      "matched": 0,
+      "omitted": 0,
+      "items": [],
+      "invalid": 1,
+      "errors": [
+        {
+          "report": "hierarchy.trx",
+          "error": "unsupported_hierarchy"
+        }
+      ]
+    },
+    "fixture": "hierarchy.trx",
+    "exit": 2,
+    "mode": "Detail"
+  },
+  {
+    "payload": {
+      "status": "invalid",
+      "reports": 1,
+      "matched": 0,
+      "omitted": 0,
+      "items": [],
+      "invalid": 1,
+      "errors": [
+        {
+          "report": "hierarchy.trx",
+          "error": "unsupported_hierarchy"
+        }
+      ]
+    },
+    "fixture": "hierarchy.trx",
+    "exit": 2,
+    "mode": "RunErrors"
+  },
+  {
+    "payload": {
+      "status": "invalid",
+      "reports": 1,
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "other": 0,
+      "runErrors": 0,
+      "invalid": 1,
+      "errors": [
+        {
+          "report": "mismatch.trx",
+          "error": "counter_result_mismatch"
+        }
+      ]
+    },
+    "fixture": "mismatch.trx",
+    "exit": 2,
+    "mode": "Summary"
+  },
+  {
+    "payload": {
+      "status": "invalid",
+      "reports": 1,
+      "matched": 0,
+      "omitted": 0,
+      "items": [],
+      "invalid": 1,
+      "errors": [
+        {
+          "report": "mismatch.trx",
+          "error": "counter_result_mismatch"
+        }
+      ]
+    },
+    "fixture": "mismatch.trx",
+    "exit": 2,
+    "mode": "Failed"
+  },
+  {
+    "payload": {
+      "status": "invalid",
+      "reports": 1,
+      "matched": 1,
+      "omitted": 0,
+      "items": [
+        {
+          "report": "mismatch.trx",
+          "test": "Synthetic.Skip"
+        }
+      ],
+      "invalid": 1,
+      "errors": [
+        {
+          "report": "mismatch.trx",
+          "error": "counter_result_mismatch"
+        }
+      ]
+    },
+    "fixture": "mismatch.trx",
+    "exit": 2,
+    "mode": "Skipped"
+  },
+  {
+    "payload": {
+      "status": "invalid",
+      "reports": 1,
+      "matched": 0,
+      "omitted": 0,
+      "items": [],
+      "unranked": 1,
+      "invalid": 1,
+      "errors": [
+        {
+          "report": "mismatch.trx",
+          "error": "counter_result_mismatch"
+        }
+      ]
+    },
+    "fixture": "mismatch.trx",
+    "exit": 2,
+    "mode": "Slow"
+  },
+  {
+    "payload": {
+      "status": "invalid",
+      "reports": 1,
+      "matched": 1,
+      "omitted": 0,
+      "items": [
+        {
+          "report": "mismatch.trx",
+          "test": "Synthetic.Skip",
+          "outcome": "NotExecuted"
+        }
+      ],
+      "invalid": 1,
+      "errors": [
+        {
+          "report": "mismatch.trx",
+          "error": "counter_result_mismatch"
+        }
+      ]
+    },
+    "fixture": "mismatch.trx",
+    "exit": 2,
+    "mode": "Detail"
+  },
+  {
+    "payload": {
+      "status": "invalid",
+      "reports": 1,
+      "matched": 0,
+      "omitted": 0,
+      "items": [],
+      "invalid": 1,
+      "errors": [
+        {
+          "report": "mismatch.trx",
+          "error": "counter_result_mismatch"
+        }
+      ]
+    },
+    "fixture": "mismatch.trx",
+    "exit": 2,
+    "mode": "RunErrors"
+  },
+  {
+    "payload": {
+      "status": "pass",
+      "reports": 1,
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "other": 0,
+      "runErrors": 0,
+      "sumReportSeconds": 1.0
+    },
+    "fixture": "passed.trx",
+    "exit": 0,
+    "mode": "Summary"
+  },
+  {
+    "payload": {
+      "status": "pass",
+      "reports": 1,
+      "matched": 0,
+      "omitted": 0,
+      "items": []
+    },
+    "fixture": "passed.trx",
+    "exit": 0,
+    "mode": "Failed"
+  },
+  {
+    "payload": {
+      "status": "pass",
+      "reports": 1,
+      "matched": 0,
+      "omitted": 0,
+      "items": []
+    },
+    "fixture": "passed.trx",
+    "exit": 0,
+    "mode": "Skipped"
+  },
+  {
+    "payload": {
+      "status": "pass",
+      "reports": 1,
+      "matched": 1,
+      "omitted": 0,
+      "items": [
+        {
+          "report": "passed.trx",
+          "test": "Synthetic.Pass",
+          "outcome": "Passed",
+          "seconds": 0.1
+        }
+      ]
+    },
+    "fixture": "passed.trx",
+    "exit": 0,
+    "mode": "Slow"
+  },
+  {
+    "payload": {
+      "status": "pass",
+      "reports": 1,
+      "matched": 1,
+      "omitted": 0,
+      "items": [
+        {
+          "report": "passed.trx",
+          "test": "Synthetic.Pass",
+          "outcome": "Passed"
+        }
+      ]
+    },
+    "fixture": "passed.trx",
+    "exit": 0,
+    "mode": "Detail"
+  },
+  {
+    "payload": {
+      "status": "pass",
+      "reports": 1,
+      "matched": 0,
+      "omitted": 0,
+      "items": []
+    },
+    "fixture": "passed.trx",
+    "exit": 0,
+    "mode": "RunErrors"
+  },
+  {
+    "payload": {
+      "status": "pass",
+      "reports": 1,
+      "total": 1,
+      "passed": 0,
+      "failed": 0,
+      "skipped": 1,
+      "other": 0,
+      "runErrors": 0
+    },
+    "fixture": "skipped.trx",
+    "exit": 0,
+    "mode": "Summary"
+  },
+  {
+    "payload": {
+      "status": "pass",
+      "reports": 1,
+      "matched": 0,
+      "omitted": 0,
+      "items": []
+    },
+    "fixture": "skipped.trx",
+    "exit": 0,
+    "mode": "Failed"
+  },
+  {
+    "payload": {
+      "status": "pass",
+      "reports": 1,
+      "matched": 1,
+      "omitted": 0,
+      "items": [
+        {
+          "report": "skipped.trx",
+          "test": "Synthetic.Skip"
+        }
+      ]
+    },
+    "fixture": "skipped.trx",
+    "exit": 0,
+    "mode": "Skipped"
+  },
+  {
+    "payload": {
+      "status": "pass",
+      "reports": 1,
+      "matched": 0,
+      "omitted": 0,
+      "items": [],
+      "unranked": 1
+    },
+    "fixture": "skipped.trx",
+    "exit": 0,
+    "mode": "Slow"
+  },
+  {
+    "payload": {
+      "status": "pass",
+      "reports": 1,
+      "matched": 1,
+      "omitted": 0,
+      "items": [
+        {
+          "report": "skipped.trx",
+          "test": "Synthetic.Skip",
+          "outcome": "NotExecuted"
+        }
+      ]
+    },
+    "fixture": "skipped.trx",
+    "exit": 0,
+    "mode": "Detail"
+  },
+  {
+    "payload": {
+      "status": "pass",
+      "reports": 1,
+      "matched": 0,
+      "omitted": 0,
+      "items": []
+    },
+    "fixture": "skipped.trx",
+    "exit": 0,
+    "mode": "RunErrors"
+  },
+  {
+    "payload": {
+      "status": "invalid",
+      "reports": 1,
+      "total": 0,
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0,
+      "other": 0,
+      "runErrors": 0,
+      "invalid": 1,
+      "errors": [
+        {
+          "report": "xxe.trx",
+          "error": "unreadable_or_invalid_xml"
+        }
+      ]
+    },
+    "fixture": "xxe.trx",
+    "exit": 2,
+    "mode": "Summary"
+  },
+  {
+    "payload": {
+      "status": "invalid",
+      "reports": 1,
+      "matched": 0,
+      "omitted": 0,
+      "items": [],
+      "invalid": 1,
+      "errors": [
+        {
+          "report": "xxe.trx",
+          "error": "unreadable_or_invalid_xml"
+        }
+      ]
+    },
+    "fixture": "xxe.trx",
+    "exit": 2,
+    "mode": "Failed"
+  },
+  {
+    "payload": {
+      "status": "invalid",
+      "reports": 1,
+      "matched": 0,
+      "omitted": 0,
+      "items": [],
+      "invalid": 1,
+      "errors": [
+        {
+          "report": "xxe.trx",
+          "error": "unreadable_or_invalid_xml"
+        }
+      ]
+    },
+    "fixture": "xxe.trx",
+    "exit": 2,
+    "mode": "Skipped"
+  },
+  {
+    "payload": {
+      "status": "invalid",
+      "reports": 1,
+      "matched": 0,
+      "omitted": 0,
+      "items": [],
+      "invalid": 1,
+      "errors": [
+        {
+          "report": "xxe.trx",
+          "error": "unreadable_or_invalid_xml"
+        }
+      ]
+    },
+    "fixture": "xxe.trx",
+    "exit": 2,
+    "mode": "Slow"
+  },
+  {
+    "payload": {
+      "status": "invalid",
+      "reports": 1,
+      "matched": 0,
+      "omitted": 0,
+      "items": [],
+      "invalid": 1,
+      "errors": [
+        {
+          "report": "xxe.trx",
+          "error": "unreadable_or_invalid_xml"
+        }
+      ]
+    },
+    "fixture": "xxe.trx",
+    "exit": 2,
+    "mode": "Detail"
+  },
+  {
+    "payload": {
+      "status": "invalid",
+      "reports": 1,
+      "matched": 0,
+      "omitted": 0,
+      "items": [],
+      "invalid": 1,
+      "errors": [
+        {
+          "report": "xxe.trx",
+          "error": "unreadable_or_invalid_xml"
+        }
+      ]
+    },
+    "fixture": "xxe.trx",
+    "exit": 2,
+    "mode": "RunErrors"
+  }
+]

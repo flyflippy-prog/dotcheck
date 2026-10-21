@@ -1,0 +1,20 @@
+* text=auto
+*.cs text eol=lf
+*.csproj text eol=lf
+*.slnx text eol=lf
+*.ps1 text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.trx text eol=lf
+.editorconfig text eol=lf
+.gitattributes text eol=lf
+.gitignore text eol=lf
+
+# Captured bytes are an immutable compatibility oracle, including line endings.
+reference/** -text -whitespace
+
+# Keep the official license download byte-for-byte intact.
+LICENSE -text
+NOTICE text eol=lf

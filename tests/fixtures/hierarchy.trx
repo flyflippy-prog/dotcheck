@@ -1,0 +1,1 @@
+<TestRun><Results><UnitTestResult testName="Synthetic.Parent" outcome="Passed"><InnerResults><UnitTestResult testName="Synthetic.Child" outcome="Passed"/></InnerResults></UnitTestResult></Results><ResultSummary outcome="Completed"><Counters total="1" passed="1" failed="0" notExecuted="0"/></ResultSummary></TestRun>

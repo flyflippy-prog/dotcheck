@@ -1,0 +1,6 @@
+dotcheck
+Copyright (c) 2026 flyflippy
+
+Originally implemented in PowerShell, dotcheck is now a .NET developer CLI.
+
+Original project: https://github.com/flyflippy-prog/dotcheck

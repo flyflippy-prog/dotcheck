@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Version>1.0.0</Version>
+    <AssemblyName>dotcheck</AssemblyName>
+    <AssemblyTitle>Bounded native .NET build/test and TRX inspection CLI</AssemblyTitle>
+    <Description>Bounded native .NET build/test and TRX inspection CLI</Description>
+    <Authors>flyflippy</Authors>
+    <Copyright>Copyright (c) 2026 flyflippy</Copyright>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/flyflippy-prog/dotcheck</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://github.com/flyflippy-prog/dotcheck</PackageProjectUrl>
+    <PublishSingleFile Condition="'$(PublishAot)' != 'true'">true</PublishSingleFile>
+    <EnableCompressionInSingleFile Condition="'$(PublishAot)' != 'true'">true</EnableCompressionInSingleFile>
+    <IsAotCompatible>true</IsAotCompatible>
+    <JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <!-- LibraryImport generates unsafe marshalling stubs; product code has no handwritten unsafe blocks. -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,27 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+
+[*.{yml,yaml}]
+indent_size = 2
+
+[*.cs]
+csharp_preserve_single_line_statements = false
+csharp_preserve_single_line_blocks = false
+csharp_new_line_before_open_brace = all
+csharp_prefer_braces = true:warning
+
+# Do not normalize or format captured compatibility sources.
+[reference/**]
+charset = unset
+end_of_line = unset
+insert_final_newline = unset
+trim_trailing_whitespace = false
+indent_style = unset
+indent_size = unset

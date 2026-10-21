@@ -1,0 +1,51 @@
+**/bin/
+**/obj/
+
+# Local builds, verification evidence, journals, and IDE state.
+/artifacts/
+/evidence/
+**/TestResults/
+.vs/
+.idea/
+.vscode/
+*.user
+*.suo
+*.log
+*.jsonl
+*.dmp
+*.binlog
+*.nupkg
+*.snupkg
+*.trx
+!tests/fixtures/*.trx
+
+# Local credentials and signing material. Synthetic fixtures remain versioned.
+.env
+.env.*
+!.env.example
+*.pfx
+*.p12
+*.key
+
+# Operating system files.
+.DS_Store
+Thumbs.db
+
+# Local migration handoff and assistant state.
+/NEW_CHAT_PROMPT.md
+.codex/
+.claude/
+
+# Release assets and accidental generated files outside the build directories.
+*.zip
+*.7z
+*.exe
+*.dll
+*.pdb
+*.bak
+*.tmp
+*.orig
+*.rej
+*.pem
+*.snk
+desktop.ini

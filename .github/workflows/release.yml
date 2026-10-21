@@ -1,0 +1,115 @@
+name: Prepare GitHub Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing release tag, such as v1.0.0
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.event.inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: windows-2025
+    timeout-minutes: 25
+    outputs:
+      tag: ${{ steps.version.outputs.tag }}
+      version: ${{ steps.version.outputs.version }}
+    defaults:
+      run:
+        shell: pwsh
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+      DOTNET_NOLOGO: '1'
+      RELEASE_TAG: ${{ github.event.inputs.tag || github.ref_name }}
+    steps:
+      - name: Check out release tag
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+          persist-credentials: false
+      - name: Verify release version
+        id: version
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if ($env:RELEASE_TAG -notmatch '^v(\d+\.\d+\.\d+)$') { throw 'Expected vMAJOR.MINOR.PATCH' }
+          $version = $Matches[1]
+          $projectVersion = ([xml](Get-Content src/dotcheck/dotcheck.csproj -Raw)).Project.PropertyGroup.Version
+          if ($version -ne $projectVersion) { throw 'Release tag does not match project version' }
+          $actual = git rev-parse HEAD
+          $tagged = git rev-parse "refs/tags/$env:RELEASE_TAG^{commit}"
+          if ($LASTEXITCODE -ne 0 -or $actual -ne $tagged) { throw 'Checkout does not match the release tag' }
+          "tag=$env:RELEASE_TAG" >> $env:GITHUB_OUTPUT
+          "version=$version" >> $env:GITHUB_OUTPUT
+      - name: Install the pinned SDK
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
+        with:
+          global-json-file: global.json
+      - name: Package and verify the release executable
+        env:
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          ./scripts/verify.ps1 -RequireFileSymlink -PackageOutputDirectory "artifacts/dotcheck-$env:RELEASE_VERSION-win-x64"
+      - name: Upload verified release assets
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: release-assets
+          path: |
+            artifacts/dotcheck-${{ steps.version.outputs.version }}-win-x64.zip
+            artifacts/dotcheck-${{ steps.version.outputs.version }}-win-x64.zip.sha256
+          if-no-files-found: error
+          retention-days: 7
+
+  draft:
+    needs: build
+    runs-on: windows-2025
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    defaults:
+      run:
+        shell: pwsh
+    env:
+      RELEASE_TAG: ${{ needs.build.outputs.tag }}
+      RELEASE_VERSION: ${{ needs.build.outputs.version }}
+    steps:
+      - name: Check out release notes
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+          persist-credentials: false
+      - name: Download verified assets
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: release-assets
+          path: release-assets
+      - name: Create draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $assets = @(Get-ChildItem release-assets -File | Select-Object -ExpandProperty FullName)
+          if ($assets.Count -ne 2) { throw 'Expected ZIP and checksum only' }
+          $existing = gh release view $env:RELEASE_TAG --json isDraft,assets 2>$null
+          if ($LASTEXITCODE -eq 0) {
+            $release = $existing | ConvertFrom-Json
+            if (-not $release.isDraft) { throw 'An existing published release must not be replaced' }
+            if ($release.assets.Count -ne 0) { throw 'Draft already has assets; inspect them before retrying' }
+            $commit = git rev-parse HEAD
+            gh release edit $env:RELEASE_TAG --draft --target $commit --title "dotcheck $env:RELEASE_VERSION" --notes-file .github/release-notes.md
+            if ($LASTEXITCODE -ne 0) { throw 'Draft release update failed' }
+            gh release upload $env:RELEASE_TAG @assets
+          } else {
+            gh release create $env:RELEASE_TAG @assets --verify-tag --draft --title "dotcheck $env:RELEASE_VERSION" --notes-file .github/release-notes.md
+          }
+          if ($LASTEXITCODE -ne 0) { throw 'Draft release preparation failed; inspect existing releases before retrying' }
