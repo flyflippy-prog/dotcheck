@@ -15,7 +15,8 @@ New-Item -ItemType Directory -Path $root | Out-Null
 $id = 'flyflippy.dotcheck'
 $aliasPath = Join-Path $env:LOCALAPPDATA 'Microsoft/WinGet/Links/dotcheck.exe'
 if (Test-Path -LiteralPath $aliasPath) { throw 'Existing dotcheck registration must not be replaced' }
-if (@(Get-ItemProperty 'HKCU:/Software/Microsoft/Windows/CurrentVersion/Uninstall/*' | Where-Object DisplayName -eq dotcheck).Count) {
+$uninstallKey = 'HKCU:/Software/Microsoft/Windows/CurrentVersion/Uninstall'
+if ((Test-Path $uninstallKey) -and @(Get-ItemProperty "$uninstallKey/*" | Where-Object DisplayName -eq dotcheck).Count) {
     throw 'An existing dotcheck installation must not be replaced by installation tests'
 }
 $manualRegistration = [Environment]::GetEnvironmentVariable('DOTCHECK_TOOL_FILE', 'User')
@@ -107,11 +108,18 @@ try {
     }
     $location = Join-Path $root 'installed tool Ω'
     Invoke-WinGet @('install', '--manifest', $previous, '--scope', 'user', '--location', $location, '--accept-package-agreements', '--accept-source-agreements')
-    # Install detects the existing older portable registration and performs an upgrade.
-    Invoke-WinGet @('install', '--manifest', $manifest, '--scope', 'user', '--location', $location, '--accept-package-agreements', '--accept-source-agreements')
+    $previousExecutables = @(Get-ChildItem $location -Filter dotcheck.exe -File -Recurse)
+    if ($previousExecutables.Count -ne 1) { throw 'Initial portable executable missing' }
+    & $previousExecutables[0].FullName -Path (Join-Path $repo 'tests/fixtures/passed.trx') -Json
+    if ($LASTEXITCODE -ne 0) { throw 'Initial installation in Unicode path failed' }
+    Invoke-WinGet @('upgrade', '--manifest', $manifest, '--accept-package-agreements', '--accept-source-agreements')
     $registration = @(Get-ItemProperty 'HKCU:/Software/Microsoft/Windows/CurrentVersion/Uninstall/*' | Where-Object { $_.WinGetPackageIdentifier -eq $id })
-    if ($registration.Count -ne 1 -or $registration[0].DisplayVersion -ne $version -or $registration[0].InstallLocation -ne $location) { throw 'Upgraded registration missing' }
-    $executables = @(Get-ChildItem $location -Filter dotcheck.exe -File -Recurse)
+    if ($registration.Count -ne 1 -or $registration[0].DisplayVersion -ne $version) { throw 'Upgraded registration missing' }
+    $upgradedLocation = [IO.Path]::GetFullPath($registration[0].InstallLocation)
+    $portableRoot = Join-Path $env:LOCALAPPDATA 'Microsoft/WinGet/Packages'
+    if ($upgradedLocation -ne $location -and -not $upgradedLocation.StartsWith(($portableRoot + '\' + $id + '_'), [StringComparison]::OrdinalIgnoreCase)) { throw 'Unexpected upgraded installation location' }
+    if ($upgradedLocation -ne $location -and (Test-Path -LiteralPath $previousExecutables[0].FullName)) { throw 'Previous executable survived uninstall-before-upgrade' }
+    $executables = @(Get-ChildItem $upgradedLocation -Filter dotcheck.exe -File -Recurse)
     if ($executables.Count -ne 1) { throw 'Installed executable missing' }
     $installed = $executables[0].FullName
     foreach ($name in @('LICENSE', 'NOTICE', 'DOTNET-LICENSE.TXT', 'DOTNET-THIRD-PARTY-NOTICES.TXT')) {
